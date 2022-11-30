@@ -3,10 +3,9 @@ import streamlit as st
 import json
 import time
 import datetime
-import webbrowser
 
 endpoint = st.sidebar.selectbox(
-    "Endpoints", ["Recently Listed", "y00ts Overview", "Test y00ts"]
+    "Endpoints", ["Recently Sold", "y00ts Overview", "Recently Listed y00ts"]
 )
 st.header(f"y00ts Explorer - {endpoint}")
 
@@ -27,7 +26,7 @@ if endpoint == "y00ts Overview":
     )
 
 
-if endpoint == "Recently Listed":
+if endpoint == "Recently Sold":
     # floor_price_selector = st.sidebar.selectbox("Floor Price?", ['Below Floor', 'Above Floor'])
     url_listings = requests.get(
         "https://api-mainnet.magiceden.dev/v2/collections/y00ts/listings?offset=0&limit=20"
@@ -83,7 +82,7 @@ if endpoint == "Recently Listed":
         st.write(item_url)
 
 
-if endpoint == "Test y00ts":
+if endpoint == "Recenly Listed":
     # floor_price_selector = st.sidebar.selectbox("Floor Price?", ['Below Floor', 'Above Floor'])
     url_listings = requests.get(
         "https://api-mainnet.magiceden.dev/v2/collections/y00ts/listings?offset=0&limit=20"
@@ -112,10 +111,7 @@ if endpoint == "Test y00ts":
         st.subheader(f"y00t #{replace_2}")
         img_url = yoot["extra"]["img"]
         mint_address = yoot["tokenMint"]
-        with st.container():
-            for col in st.columns(4):
-                col.image(img_url, width=150)
-        # st.image(img_url)
+        st.image(img_url)
         price = int(yoot["price"])
 
         print(price)
