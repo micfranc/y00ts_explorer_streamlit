@@ -3,9 +3,10 @@ import streamlit as st
 import json
 import time
 import datetime
+import pandas as pd
 
 endpoint = st.sidebar.selectbox(
-    "Endpoints", ["y00ts Overview", "Recently Sold", "Recently Listed"]
+    "Endpoints", ["y00ts Overview", "Recently Sold", "Recently Listed", "y00t Events"]
 )
 st.header(f"y00ts Explorer - {endpoint}")
 
@@ -25,6 +26,7 @@ if endpoint == "y00ts Overview":
         "https://img-cdn.magiceden.dev/rs:fill:400:400:0:0/plain/https://bafkreidc5co72clgqor54gpugde6tr4otrubjfqanj4vx4ivjwxnhqgaai.ipfs.dweb.link/"
     )
 
+## RECENTLY SOLD
 
 if endpoint == "Recently Sold":
     # floor_price_selector = st.sidebar.selectbox("Floor Price?", ['Below Floor', 'Above Floor'])
@@ -147,3 +149,35 @@ if endpoint == "Recently Listed":
             f"""<a href="https://magiceden.io/item-details/{mint_address}?name=y00t-%23{replace_2}">BUY NOW</a>""",
             unsafe_allow_html=True,
         )
+
+if endpoint == "y00t Events":
+    params = {"type": "buyNow"}
+    url_listings = requests.get(
+        "https://api-mainnet.magiceden.dev/v2/collections/y00ts/activities?offset=0&limit=1000",
+        params=params,
+    )
+
+    events = json.loads(url_listings.text)
+    event_list = []
+
+    # st.write(events)
+
+    for event in events:
+        replace_1 = event["image"].replace("https://metadata.y00ts.com/y/", "")
+        replace_2 = replace_1.replace(".png", "")
+        mint_address = event["tokenMint"]
+        item_url = (
+            f"https://magiceden.io/item-details/{mint_address}?name=y00t-%23{replace_2}"
+        )
+
+        type = event["type"]
+        time = event["blockTime"]
+        price = event["price"]
+        image = event["image"]
+        event_list.append([type, time, price, item_url])
+
+    df = pd.DataFrame(event_list, columns=["type", "time", "price", "url"])
+    st.write(df)
+
+
+# type, blockTime, price, image
