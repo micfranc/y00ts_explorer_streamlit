@@ -172,9 +172,10 @@ if endpoint == "y00t Events":
             ts = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
             price = event["price"]
             image = event["image"]
-            event_list.append([type, ts, price, item_url])
+            buyer = event["buyer"]
+            event_list.append([type, ts, price, item_url, buyer])
 
-    df = pd.DataFrame(event_list, columns=["Type", "Date", "Price", "Link"])
+    df = pd.DataFrame(event_list, columns=["Type", "Date", "Price", "Link", "Buyer"])
     st.write(df)
 
 
