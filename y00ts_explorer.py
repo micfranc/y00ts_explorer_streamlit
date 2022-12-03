@@ -4,6 +4,7 @@ import json
 import time
 import datetime
 import pandas as pd
+from datetime import datetime
 
 endpoint = st.sidebar.selectbox(
     "Endpoints", ["y00ts Overview", "Recently Sold", "Recently Listed", "y00t Events"]
@@ -38,10 +39,6 @@ if endpoint == "Recently Sold":
 
     listings_data = json.loads(url_listings.text)
     print(listings_data)
-    # output_dict = [x for x in listings_data if x["type"] == "buyNow"]
-    # print("return")
-    # output_json = json.loads(output_dict.text)
-    # print(output_json)
 
     url_stats = requests.get(
         "https://api-mainnet.magiceden.dev/v2/collections/y00ts/stats"
@@ -163,20 +160,21 @@ if endpoint == "y00t Events":
     # st.write(events)
 
     for event in events:
-        replace_1 = event["image"].replace("https://metadata.y00ts.com/y/", "")
-        replace_2 = replace_1.replace(".png", "")
-        mint_address = event["tokenMint"]
-        item_url = (
-            f"https://magiceden.io/item-details/{mint_address}?name=y00t-%23{replace_2}"
-        )
+        if event["price"] > 250:
+            replace_1 = event["image"].replace("https://metadata.y00ts.com/y/", "")
+            replace_2 = replace_1.replace(".png", "")
+            mint_address = event["tokenMint"]
+            item_url = f"https://magiceden.io/item-details/{mint_address}?name=y00t-%23{replace_2}"
 
-        type = event["type"]
-        time = event["blockTime"]
-        price = event["price"]
-        image = event["image"]
-        event_list.append([type, time, price, item_url])
+            type = event["type"]
+            time = event["blockTime"]
+            ts = int(time)
+            ts = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+            price = event["price"]
+            image = event["image"]
+            event_list.append([type, ts, price, item_url])
 
-    df = pd.DataFrame(event_list, columns=["type", "time", "price", "url"])
+    df = pd.DataFrame(event_list, columns=["Type", "Date", "Price", "Link"])
     st.write(df)
 
 
